@@ -49,7 +49,7 @@ router.delete("/:id", async (req, res) => {
     //Match the usernames
     if (idea.username === req.body.username) {
       await Idea.findByIdAndDelete(req.params.id);
-      res.json({ success: true, data: {} });
+      return res.json({ success: true, data: {} });
     }
 
     //If the usernames don't match
