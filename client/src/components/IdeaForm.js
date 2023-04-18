@@ -13,7 +13,6 @@ class IdeaForm {
 
   async handleSubmit(e) {
     e.preventDefault();
-    console.log("Submitted");
 
     if (
       !this._form.elements.text.value ||
