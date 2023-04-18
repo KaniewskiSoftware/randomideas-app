@@ -44,8 +44,18 @@ router.post("/", async (req, res) => {
 // Delete idea
 router.delete("/:id", async (req, res) => {
   try {
-    await Idea.findByIdAndDelete(req.params.id);
-    res.json({ success: true, data: {} });
+    const idea = await Idea.findById(req.params.id);
+
+    //Match the usernames
+    if (idea.username === req.body.username) {
+      await Idea.findByIdAndDelete(req.params.id);
+      res.json({ success: true, data: {} });
+    }
+
+    //If the usernames don't match
+    res
+      .status(403)
+      .json({ success: false, error: "You can only delete your own ideas" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, error: "Something went wrong" });
@@ -55,17 +65,27 @@ router.delete("/:id", async (req, res) => {
 // Update idea
 router.put("/:id", async (req, res) => {
   try {
-    const updatedIdea = await Idea.findByIdAndUpdate(
-      req.params.id,
-      {
-        $set: {
-          text: req.body.text,
-          tag: req.body.tag,
+    const idea = await Idea.findById(req.params.id);
+
+    //Match the usernames
+    if (idea.username === req.body.username) {
+      const updatedIdea = await Idea.findByIdAndUpdate(
+        req.params.id,
+        {
+          $set: {
+            text: req.body.text,
+            tag: req.body.tag,
+          },
         },
-      },
-      { new: true }
-    );
-    res.json({ success: true, data: updatedIdea });
+        { new: true }
+      );
+      return res.json({ success: true, data: updatedIdea });
+    }
+
+    //If the usernames don't match
+    res
+      .status(403)
+      .json({ success: false, error: "You can only update your own ideas" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, error: "Something went wrong" });
